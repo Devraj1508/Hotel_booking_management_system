@@ -1,0 +1,9 @@
+HotelBooking/
+  backend/
+    src/{Controllers,Router,database,middleware,models,services,utils,validators}
+  frontend/HotelBooking/
+    api/
+    src/{app,core,features,styles}
+  Architecture.txt
+  layout.txt
+  README.md

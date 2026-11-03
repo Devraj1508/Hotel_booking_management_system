@@ -1,0 +1,30 @@
+Hotel Booking Management System Architecture
+
+Request flow
+------------
+The React application sends credentialed Axios requests to the Express `/api` routes.
+Express applies Helmet, exact-origin CORS, JSON parsing, cookies, rate limiting, and
+route validation before controllers handle HTTP concerns. Services will own booking
+availability and transaction logic as the domain grows.
+
+Authentication
+--------------
+Registration hashes passwords with bcrypt. Login signs a JWT containing the user id
+and role and places it in an HTTP-only cookie. Protected requests verify the JWT,
+hash the presented token, and look up that hash in TokenBlacklist before loading the
+user. Logout stores the hash until the JWT expiry and clears the cookie. The blacklist
+uses a MongoDB TTL index on `expiresAt`.
+
+Data and booking design
+-----------------------
+User, Hotel, Room, Booking, Review, and TokenBlacklist are separate Mongoose models.
+Availability must use the overlap rule `existing.checkIn < requested.checkOut` and
+`existing.checkOut > requested.checkIn`, count only active reservations, calculate
+prices on the server, and use a transaction/atomic inventory strategy for concurrent
+multi-room requests.
+
+Frontend
+--------
+The Vite React client uses feature folders, an AuthContext for the current session,
+route guards for customer pages, and shared design tokens in global.css. Backend
+authorization remains authoritative; client guards only improve navigation UX.
