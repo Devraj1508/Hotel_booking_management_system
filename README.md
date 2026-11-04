@@ -35,6 +35,34 @@ npm run dev
 
 The API runs at `http://localhost:5000` and Vite at `http://localhost:5173`.
 
+## Deploy the frontend to Netlify
+
+The repository includes [`netlify.toml`](./netlify.toml), which configures Netlify
+to build the Vite app from `frontend/HotelBooking`. Import the repository into
+Netlify without changing the build command or publish directory. The frontend
+also includes an SPA fallback so refreshing a client-side route does not return
+a Netlify 404.
+
+Set `VITE_API_BASE_URL` in the Netlify site environment variables to the deployed
+backend URL followed by `/api`, for example `https://api.example.com/api`.
+Do not set it to `localhost` in a deployed site: the browser would try to connect
+to the visitor's computer. Trigger a new Netlify deploy after changing this
+variable.
+
+The backend must also be deployed separately to a Node-compatible host with a
+reachable MongoDB database. Configure its environment variables before starting
+it:
+
+- `NODE_ENV=production`
+- `MONGODB_URI=<your production MongoDB connection string>`
+- `JWT_SECRET=<a long random secret>`
+- `FRONTEND_URL=https://<your-netlify-site>.netlify.app`
+
+`FRONTEND_URL` must exactly match the deployed frontend origin (without a
+trailing slash), or the browser's credentialed authentication requests will be
+blocked by CORS. After deployment, verify `<backend-url>/api/health` returns a
+healthy response, then set `VITE_API_BASE_URL=<backend-url>/api` in Netlify.
+
 ## API
 
 Implemented authentication endpoints:
